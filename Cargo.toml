@@ -1,0 +1,28 @@
+[package]
+name = "emrs-dirdiff"
+version = "0.1.0"
+publish = false
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Pinned to a commit; bump deliberately (docs/next-steps.md).
+emrs = { git = "https://github.com/tohammer/emrs.git", rev = "f05b9fac93aaeff7679e7e057af744cf6807c043" }
+serde = { version = "1", features = ["derive"] }
+ignore = "0.4"
+similar = "2"
+rayon = "1"
+
+[dev-dependencies]
+tempfile = "3"
+
+# The session catches task panics with `catch_unwind`, which needs unwinding.
+[profile.dev]
+panic = "unwind"
+
+[profile.release]
+panic = "unwind"
