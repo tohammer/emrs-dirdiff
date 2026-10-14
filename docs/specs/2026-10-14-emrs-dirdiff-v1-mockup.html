@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>emrs-dirdiff layouts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: a short brief, then three Emacs buffers in a wrapping grid, then what all three share. */
+:root {
+  --bg: #f3f4f1;
+  --fg: #1f2622;
+  --muted: #5d6860;
+  --rule: #cfd4cc;
+  --buf-bg: #fbfcfa;
+  --buf-fg: #232a26;
+  --buf-dim: #7d877f;
+  --modeline: #dfe4dc;
+  --hl: #e6ebe2;
+  --changed: #9a5b00;
+  --left: #b3261e;
+  --right: #1d6f42;
+  --accent: #2f5d8a;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171b19; --fg: #e3e8e2; --muted: #9aa69c; --rule: #333b36;
+    --buf-bg: #1e2421; --buf-fg: #dfe5de; --buf-dim: #7f8b82; --modeline: #2b332e; --hl: #2a322d;
+    --changed: #e3a94a; --left: #f08a80; --right: #74c796; --accent: #8fb8e0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171b19; --fg: #e3e8e2; --muted: #9aa69c; --rule: #333b36;
+  --buf-bg: #1e2421; --buf-fg: #dfe5de; --buf-dim: #7f8b82; --modeline: #2b332e; --hl: #2a322d;
+  --changed: #e3a94a; --left: #f08a80; --right: #74c796; --accent: #8fb8e0;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1500px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 48px; display: flex; flex-direction: column; gap: 28px; }
+h1 { font-size: 1.5rem; font-weight: 600; margin: 0; text-wrap: balance; }
+h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 31rem), 1fr)); gap: 24px; align-items: start; }
+.variant { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.tag { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.06em; color: var(--accent); }
+.buffer { border: 1px solid var(--rule); background: var(--buf-bg); min-width: 0; }
+.scroll { overflow-x: auto; }
+pre { margin: 0; padding: 10px 12px; font-family: var(--mono); font-size: 12.5px; line-height: 1.45; color: var(--buf-fg); }
+.modeline { font-family: var(--mono); font-size: 12px; background: var(--modeline); color: var(--muted); padding: 3px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m { color: var(--changed); } .l { color: var(--left); } .r { color: var(--right); }
+.d { color: var(--buf-dim); } .b { font-weight: 600; } .k { color: var(--accent); }
+.cur { background: var(--hl); display: inline-block; min-width: 100%; }
+ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; max-width: 62ch; }
+.pc { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 4px 18px; font-size: 0.9rem; }
+.pc b { font-weight: 600; }
+.shared { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 31rem), 1fr)); gap: 24px; align-items: start; border-top: 1px solid var(--rule); padding-top: 24px; }
+.shared > div { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+</style>
+
+<div class="page">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <h1>emrs-dirdiff: three ways to show a directory comparison</h1>
+    <p class="lead">Each box is the same comparison of <code>~/src/app-1.4</code> with <code>~/src/app-1.5</code> as an Emacs buffer. Identical entries are hidden by default in all three. Pick one, or name the parts you would combine.</p>
+  </header>
+
+  <div class="grid">
+    <section class="variant">
+      <span class="tag">A · ONE TREE</span>
+      <h2>Merged tree with a status column</h2>
+      <div class="buffer">
+        <div class="scroll"><pre><span class="b">A</span> <span class="d">~/src/</span><span class="b">app-1.4</span>    <span class="b">B</span> <span class="d">~/src/</span><span class="b">app-1.5</span>
+<span class="m">12 changed</span> · <span class="l">3 only in A</span> · <span class="r">5 only in B</span> · <span class="d">847 same (hidden)</span>
+
+<span class="m">M</span>  ▾ src/                    <span class="d">3 changed, 1 only A, 2 only B</span>
+<span class="cur"><span class="m">M</span>      main.rs               <span class="d">4.1k → 4.3k   +12 −4</span></span>
+<span class="m">M</span>      walk.rs               <span class="d">2.0k → 2.6k   +31 −9</span>
+<span class="m">M</span>      hash.rs               <span class="d">900 → 900     +1 −1</span>
+<span class="l">A</span>      <span class="l">legacy.rs</span>             <span class="d">1.2k</span>
+<span class="r">B</span>    ▾ <span class="r">config/</span>               <span class="d">2 files</span>
+<span class="r">B</span>        <span class="r">defaults.toml</span>       <span class="d">310</span>
+<span class="r">B</span>        <span class="r">schema.rs</span>           <span class="d">1.4k</span>
+<span class="m">M</span>  ▸ tests/                  <span class="d">8 changed</span>
+<span class="l">A</span>  ▸ <span class="l">vendor/</span>                 <span class="d">2 files</span>
+<span class="m">M</span>    Cargo.toml              <span class="d">820 → 846     +2 −1</span>
+<span class="r">B</span>    <span class="r">CHANGELOG.md</span>            <span class="d">2.0k</span>
+<span class="r">B</span>    <span class="r">rust-toolchain.toml</span>     <span class="d">64</span></pre></div>
+        <div class="modeline">*dirdiff: app-1.4 ↔ app-1.5*   content · gitignore on · 867 files in 0.4 s</div>
+      </div>
+      <div class="pc">
+        <div><b>For:</b> fits a half-width window, full names stay readable, room for sizes and line counts, easy to mark and filter.</div>
+        <div><b>Against:</b> the side is a letter and a colour, not a position; unlike Beyond Compare.</div>
+      </div>
+    </section>
+
+    <section class="variant">
+      <span class="tag">B · TWO PANES</span>
+      <h2>Left and right tree in aligned columns</h2>
+      <div class="buffer">
+        <div class="scroll"><pre><span class="d">~/src/</span><span class="b">app-1.4</span>                  │ <span class="d">~/src/</span><span class="b">app-1.5</span>
+<span class="m">12 changed</span> · <span class="l">3 only left</span> · <span class="r">5 only right</span> · <span class="d">847 same (hidden)</span>
+
+▾ <span class="m">src/</span>                          │ ▾ <span class="m">src/</span>
+<span class="cur">    <span class="m">main.rs</span>            <span class="d">4.1k</span>     │     <span class="m">main.rs</span>            <span class="d">4.3k</span></span>
+    <span class="m">walk.rs</span>            <span class="d">2.0k</span>     │     <span class="m">walk.rs</span>            <span class="d">2.6k</span>
+    <span class="m">hash.rs</span>            <span class="d">900</span>      │     <span class="m">hash.rs</span>            <span class="d">900</span>
+    <span class="l">legacy.rs</span>          <span class="d">1.2k</span>     │
+                                │   ▾ <span class="r">config/</span>
+                                │       <span class="r">defaults.toml</span>    <span class="d">310</span>
+                                │       <span class="r">schema.rs</span>        <span class="d">1.4k</span>
+▸ <span class="m">tests/</span>                        │ ▸ <span class="m">tests/</span>
+▸ <span class="l">vendor/</span>                       │
+  <span class="m">Cargo.toml</span>           <span class="d">820</span>      │   <span class="m">Cargo.toml</span>           <span class="d">846</span>
+                                │   <span class="r">CHANGELOG.md</span>         <span class="d">2.0k</span>
+                                │   <span class="r">rust-toolchain.toml</span>  <span class="d">64</span></pre></div>
+        <div class="modeline">*dirdiff: app-1.4 ↔ app-1.5*   content · gitignore on · 867 files in 0.4 s</div>
+      </div>
+      <div class="pc">
+        <div><b>For:</b> familiar from ztree and Beyond Compare, the side is obvious, copy direction reads naturally.</div>
+        <div><b>Against:</b> needs about 70 columns, long names get cut, half of many lines is empty, no room for line counts.</div>
+      </div>
+    </section>
+
+    <section class="variant">
+      <span class="tag">C · SECTIONS</span>
+      <h2>Flat lists grouped by kind of difference</h2>
+      <div class="buffer">
+        <div class="scroll"><pre><span class="b">A</span> <span class="d">~/src/</span><span class="b">app-1.4</span>    <span class="b">B</span> <span class="d">~/src/</span><span class="b">app-1.5</span>
+
+▾ <span class="m b">Changed (12)</span>
+<span class="cur">    src/main.rs               <span class="d">4.1k → 4.3k   +12 −4</span></span>
+    src/walk.rs               <span class="d">2.0k → 2.6k   +31 −9</span>
+    src/hash.rs               <span class="d">900 → 900     +1 −1</span>
+    Cargo.toml                <span class="d">820 → 846     +2 −1</span>
+  ▸ tests/                    <span class="d">8 files</span>
+
+▾ <span class="l b">Only in A (3)</span>
+    <span class="l">src/legacy.rs</span>             <span class="d">1.2k</span>
+  ▸ <span class="l">vendor/</span>                   <span class="d">2 files</span>
+
+▾ <span class="r b">Only in B (5)</span>
+    <span class="r">CHANGELOG.md</span>              <span class="d">2.0k</span>
+    <span class="r">rust-toolchain.toml</span>       <span class="d">64</span>
+  ▸ <span class="r">src/config/</span>               <span class="d">2 files</span>
+
+▸ <span class="d b">Same (847)</span></pre></div>
+        <div class="modeline">*dirdiff: app-1.4 ↔ app-1.5*   content · gitignore on · 867 files in 0.4 s</div>
+      </div>
+      <div class="pc">
+        <div><b>For:</b> reads like <code>magit-status</code>, answers "what was added or removed" at once, acting on a whole section is natural.</div>
+        <div><b>Against:</b> the directory structure is lost, one directory can appear in three sections.</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="shared">
+    <div>
+      <h2>Shared by all three: results while it runs</h2>
+      <p class="lead">The buffer opens at once and fills as the module reports differences. Leaving the buffer or <code>C-g</code> cancels the comparison.</p>
+      <div class="buffer">
+        <div class="scroll"><pre><span class="b">A</span> <span class="d">~/backup/photos</span>    <span class="b">B</span> <span class="d">/mnt/nas/photos</span>
+<span class="k">Comparing…</span> 18,204 of about 41,000 files · <span class="m">37 changed</span> · <span class="r">212 only in B</span>
+<span class="d">████████████░░░░░░░░░░░░░░░░  44 %   C-g to stop</span>
+
+<span class="m">M</span>  ▸ 2024/                   <span class="d">31 changed</span>
+<span class="r">B</span>  ▸ <span class="r">2026/</span>                   <span class="d">212 files</span>
+<span class="d">·  ▸ 2025/                   comparing…</span></pre></div>
+        <div class="modeline">*dirdiff: photos ↔ photos*   size+mtime · 18,204 files, running</div>
+      </div>
+    </div>
+    <div>
+      <h2>Shared by all three: one menu for every key</h2>
+      <p class="lead"><code>?</code> opens a menu that lists the commands and shows the current settings, so nothing has to be remembered or set in the init file.</p>
+      <div class="buffer">
+        <div class="scroll"><pre><span class="b">Open</span>                     <span class="b">Move</span>                 <span class="b">Show</span>
+ <span class="k">RET</span> diff this file       <span class="k">n p</span> next, previous    <span class="k">s</span> same files      <span class="d">off</span>
+ <span class="k">e</span>   ediff                <span class="k">N P</span> next, prev. dir   <span class="k">i</span> ignored files   <span class="d">off</span>
+ <span class="k">o</span>   visit A   <span class="k">O</span> visit B  <span class="k">TAB</span> fold directory    <span class="k">/</span> filter by name
+ <span class="k">d</span>   dired here           <span class="k">^</span>   parent            <span class="k">f</span> only changed / A / B
+
+<span class="b">Act</span> <span class="d">(on the marked entries, or the one at point)</span>      <span class="b">Compare by</span>
+ <span class="k">m u</span> mark, unmark         <span class="k">&gt;</span> copy A → B          <span class="k">c</span> content         <span class="d">on</span>
+ <span class="k">U</span>   unmark all           <span class="k">&lt;</span> copy B → A          <span class="k">t</span> size and time
+ <span class="k">D</span>   delete               <span class="k">w</span> copy path           <span class="k">W</span> ignore whitespace <span class="d">off</span>
+                                                <span class="k">I</span> respect .gitignore <span class="d">on</span>
+ <span class="k">g</span>   compare again        <span class="k">x</span> swap A and B        <span class="k">q</span> quit</pre></div>
+      </div>
+    </div>
+  </div>
+</div>
