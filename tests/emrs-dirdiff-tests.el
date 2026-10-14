@@ -10,6 +10,12 @@
 (require 'ert)
 (require 'emrs-dirdiff)
 
+;; emrs-dirdiff resolves both roots with `file-truename'; resolve the
+;; temporary directory too (on macOS /var is a link to /private/var), so
+;; paths the tests build compare equal to the buffer's.
+(setq temporary-file-directory (file-name-as-directory
+                                (file-truename temporary-file-directory)))
+
 (defun emrs-dirdiff-test--wait (pred &optional seconds)
   "Wait up to SECONDS (default 10) until PRED returns non-nil; return it."
   (let ((deadline (+ (float-time) (or seconds 10))))
@@ -855,13 +861,13 @@ that the instance stops, the stream is cancelled and no timer is left."
                 ;; d: Dired at the directory of the entry, point on it.
                 (emrs-dirdiff-test--goto "deep/er/n.txt")
                 (emrs-dirdiff-dired-entry)
-                (should (equal (file-name-as-directory dired-directory) (expand-file-name "deep/er/" a)))
+                (should (equal (file-name-as-directory (expand-file-name dired-directory)) (expand-file-name "deep/er/" a)))
                 (should (equal (dired-get-filename) (expand-file-name "deep/er/n.txt" a)))
                 (push (current-buffer) created)
                 (select-window (get-buffer-window buffer))
                 (emrs-dirdiff-test--goto "onlyb")
                 (emrs-dirdiff-dired-entry)
-                (should (equal (file-name-as-directory dired-directory) (file-name-as-directory b)))
+                (should (equal (file-name-as-directory (expand-file-name dired-directory)) (file-name-as-directory b)))
                 (should (equal (directory-file-name (dired-get-filename))
                                (expand-file-name "onlyb" b)))
                 (push (current-buffer) created)
@@ -1821,7 +1827,11 @@ behind; the parent's identical entries are fetched afresh after it."
     (named-let walk ((x (get 'emrs-dirdiff-menu 'transient--layout)))
       (cond ((vectorp x) (walk (append x nil)))
             ((consp x)
-             (let ((plist (and (symbolp (car x)) (cdr x))))
+             ;; A suffix is (CLASS . PLIST) in newer transient versions and
+             ;; (LEVEL CLASS PLIST) in older ones (Emacs 30.1's), where
+             ;; the walk reaches PLIST itself.
+             (let ((plist (cond ((keywordp (car x)) x)
+                                ((symbolp (car x)) (cdr x)))))
                (when (and (proper-list-p plist) (stringp (plist-get plist :key)))
                  (push (plist-get plist :key) keys)))
              (when (proper-list-p x)
@@ -1844,7 +1854,8 @@ behind; the parent's identical entries are fetched afresh after it."
     (dolist (key emrs-dirdiff-test--spec-keys)
       (let ((suffix (transient-get-suffix 'emrs-dirdiff-menu key)))
         (should suffix)
-        (let ((command (plist-get (cdr suffix) :command)))
+        (let ((command (plist-get (if (integerp (car suffix)) (nth 2 suffix) (cdr suffix))
+                                  :command)))
           (unless (equal key "q")
             (should (eq (lookup-key emrs-dirdiff-mode-map (kbd key)) command)))
           (cl-incf checked))))
