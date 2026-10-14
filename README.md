@@ -17,10 +17,8 @@ filters, marks, copy, delete, rescans and the transient menu.
 Checked automatically:
 
 - `cargo test` (the Rust module) passes.
-- The ERT suite (`tests/run-ert.sh`) passes in batch mode on Linux with
-  Emacs 31.1.
-- CI is configured for Linux and macOS with Emacs 30.1 and 31.1. It has
-  not run yet, because nothing is pushed.
+- The ERT suite (`tests/run-ert.sh`) passes in batch mode in CI on Linux
+  and macOS with Emacs 30.1 and 31.1.
 
 Checked on Linux with Emacs 31.1 (2026-10-14). In a GUI frame driven by a
 script that exported screenshots of the frame:
@@ -37,10 +35,8 @@ keystrokes through a pseudo-terminal: navigation, folding, the section
 view, the menu, the name filter, copy with its prompt, delete of a
 one-sided file and the diff buffer. All glyphs (`▾ ▸ ↔ → − ·`) display.
 
-Not checked:
-
-- Emacs 30.1 at all.
-- macOS.
+Not checked by hand: Emacs 30.1 and macOS (only the automated suite runs
+there).
 
 In Emacs's default theme, `diff-changed` has no colour, so changed
 entries are marked only by their `M`; themes that colour diff-mode, such

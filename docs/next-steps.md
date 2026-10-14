@@ -5,10 +5,7 @@ the architecture docs or an ADR.
 
 ## Next
 
-1. Push the branch and watch the first CI run (Linux and macOS, Emacs 30.1
-   and 31.1). Emacs 30.1 and macOS have never run. The responsiveness
-   limit on CI is 150 ms.
-2. Merge the branch.
+1. Merge PR #1 (`feat/emrs-dirdiff-v1`) once its CI is green.
 
 ## Watch out for
 
@@ -19,5 +16,10 @@ the architecture docs or an ADR.
   end a stream `cancelled`, so kinds and statuses are strings and streams
   stopped by the module end `failed` with "cancelled" (spec, "The
   service").
+- Tests must not assume the temporary directory's spelling: on macOS it
+  resolves to `/private/var/...`, and on GitHub runners it lies under
+  `$HOME`, so dired shows it as `~/...`. The transient bundled with Emacs
+  30 lays out suffixes differently from newer versions. The responsiveness
+  limit on CI is 150 ms.
 - The mockup shows `C-g` to stop and both `i` and `I` for ignored files;
   the spec supersedes it with `C-c C-k` and `i` alone.
