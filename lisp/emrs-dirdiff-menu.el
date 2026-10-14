@@ -97,6 +97,7 @@
     ("N" "next directory" emrs-dirdiff-next-group :transient t)
     ("P" "previous directory" emrs-dirdiff-previous-group :transient t)
     ("TAB" "fold directory" emrs-dirdiff-toggle-fold :transient t)
+    ("<backtab>" "fold all" emrs-dirdiff-toggle-fold-all :transient t)
     ("^" "parent" emrs-dirdiff-up :transient t)]
    ["Show"
     ("s" emrs-dirdiff-toggle-same :description emrs-dirdiff-menu--same :transient t)

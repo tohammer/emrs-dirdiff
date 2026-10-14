@@ -188,6 +188,7 @@ settings of the buffer.
 | `n`, `p` | `emrs-dirdiff-next-difference`, `-previous-difference` | Next, previous difference |
 | `N`, `P` | `emrs-dirdiff-next-group`, `-previous-group` | Next, previous directory with differences (section header in the section view) |
 | `TAB` | `emrs-dirdiff-toggle-fold` | Fold or unfold the directory or section at point |
+| `S-TAB` | `emrs-dirdiff-toggle-fold-all` | Fold every directory (every section in the section view) when any is unfolded, else unfold them all |
 | `^` | `emrs-dirdiff-up` | Go to the parent |
 | **Show** | | |
 | `s` | `emrs-dirdiff-toggle-same` | Show or hide identical entries (section view: unfold or fold the Same section) |

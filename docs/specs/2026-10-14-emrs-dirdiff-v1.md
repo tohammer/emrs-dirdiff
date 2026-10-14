@@ -242,6 +242,7 @@ and `warning`, so themes that style diff-mode style this too.
 | `n`, `p` | Next, previous difference (skipping identical lines) |
 | `N`, `P` | Next, previous directory with differences (section header in the section view) |
 | `TAB` (also `<tab>`), `^` | Toggle the fold of the directory or section at point; go to the parent |
+| `S-TAB` (also `<backtab>`) | Fold every directory (section view: every section) when any shown one is unfolded, else unfold them all. Added after implementation, at the user's request during testing |
 | `s` | Toggle showing identical entries (in the section view: fold or unfold the Same section) |
 | `i` | Toggle whether `.gitignore` and similar files apply (rescans) |
 | `/` | Filter by name (substring, smart-case: case-insensitive unless it has an uppercase letter; empty clears) |

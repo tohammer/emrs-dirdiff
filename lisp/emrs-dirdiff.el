@@ -1368,6 +1368,44 @@ In `kill-buffer-hook' and `change-major-mode-hook'."
       (puthash path (if (emrs-dirdiff--expanded-p path) 'closed 'open) emrs-dirdiff--folds)
       (emrs-dirdiff--redraw))))
 
+(defun emrs-dirdiff--fold-directories ()
+  "Return every directory below the root that can be folded."
+  (let (dirs)
+    (maphash (lambda (path _)
+               (when (and (not (equal path ""))
+                          (emrs-dirdiff--expandable-p path))
+                 (push path dirs)))
+             emrs-dirdiff--children)
+    dirs))
+
+(defun emrs-dirdiff--visibly-expanded-p (path)
+  "Non-nil when PATH and every directory above it are expanded."
+  (and (emrs-dirdiff--expanded-p path)
+       (let ((parent (emrs-dirdiff--parent path)))
+         (or (equal parent "") (emrs-dirdiff--visibly-expanded-p parent)))))
+
+(defun emrs-dirdiff-toggle-fold-all ()
+  "Fold everything when anything shown is unfolded, else unfold everything.
+In the tree view this applies to every directory, in the section view to
+every section.  A directory unfolded inside a folded one does not count."
+  (interactive nil emrs-dirdiff-mode)
+  (if (eq emrs-dirdiff--view 'sections)
+      (let* ((sections (mapcar #'car emrs-dirdiff--sections))
+             (state (if (seq-some #'emrs-dirdiff--section-open-p sections)
+                        'closed
+                      'open)))
+        (dolist (section sections)
+          (puthash section state emrs-dirdiff--section-folds))
+        (message "All sections %s" (if (eq state 'open) "unfolded" "folded")))
+    (let* ((dirs (emrs-dirdiff--fold-directories))
+           (state (if (seq-some #'emrs-dirdiff--visibly-expanded-p dirs)
+                      'closed
+                    'open)))
+      (dolist (dir dirs)
+        (puthash dir state emrs-dirdiff--folds))
+      (message "All directories %s" (if (eq state 'open) "expanded" "collapsed"))))
+  (emrs-dirdiff--redraw))
+
 (defun emrs-dirdiff-toggle-same ()
   "Toggle showing the identical entries.
 In the section view this folds or unfolds the Same section."
@@ -2184,6 +2222,8 @@ sides, compare only that directory."
   :parent special-mode-map
   "TAB" #'emrs-dirdiff-toggle-fold
   "<tab>" #'emrs-dirdiff-toggle-fold
+  "S-TAB" #'emrs-dirdiff-toggle-fold-all
+  "<backtab>" #'emrs-dirdiff-toggle-fold-all
   "s" #'emrs-dirdiff-toggle-same
   "v" #'emrs-dirdiff-toggle-view
   "RET" #'emrs-dirdiff-open

@@ -511,6 +511,46 @@ visited, as paths or section symbols."
       (push (or (emrs-dirdiff--section-at-point) (emrs-dirdiff--path-at-point)) seen))
     (nreverse seen)))
 
+(ert-deftest emrs-dirdiff-test-fold-all ()
+  "S-TAB folds every directory or section, and unfolds them again."
+  (emrs-dirdiff-test--with-fixture (_root _a _b buffer)
+    (with-current-buffer buffer
+      (emrs-dirdiff-test--goto "deep/er/n.txt")
+      (emrs-dirdiff-toggle-fold-all)
+      (should (equal (emrs-dirdiff-test--body buffer)
+                     '("M    changed.txt            6 → 8         +2 −1"
+                       "M  ▸ deep/                  1 changed"
+                       "T    kindy                  kind differs (A: file)"
+                       "A    only-a.txt             1"
+                       "B    onlyb/                 2 files")))
+      ;; Point moves to a line that is still shown.
+      (should (emrs-dirdiff--path-at-point))
+      ;; A directory unfolded inside a folded one is not shown, so the next
+      ;; S-TAB still unfolds everything.
+      (emrs-dirdiff-test--goto "deep")
+      (emrs-dirdiff-toggle-fold)
+      (emrs-dirdiff-test--goto "deep/er")
+      (emrs-dirdiff-toggle-fold)
+      (emrs-dirdiff-test--goto "deep")
+      (emrs-dirdiff-toggle-fold)
+      (should (equal (gethash "deep/er" emrs-dirdiff--folds) 'open))
+      (emrs-dirdiff-toggle-fold-all)
+      (should (equal (emrs-dirdiff-test--body buffer) emrs-dirdiff-test--tree))
+      ;; Something is unfolded now, so S-TAB folds again.
+      (emrs-dirdiff-toggle-fold-all)
+      (should (equal (nth 1 (emrs-dirdiff-test--body buffer))
+                     "M  ▸ deep/                  1 changed"))
+      (emrs-dirdiff-toggle-fold-all)
+      (should (equal (emrs-dirdiff-test--body buffer) emrs-dirdiff-test--tree))
+      ;; In the section view it applies to the sections.
+      (emrs-dirdiff-toggle-view)
+      (emrs-dirdiff-toggle-fold-all)
+      (should (seq-every-p (lambda (line) (or (equal line "") (string-prefix-p "▸ " line)))
+                           (emrs-dirdiff-test--body buffer)))
+      (emrs-dirdiff-toggle-fold-all)
+      (should (seq-every-p #'emrs-dirdiff--section-open-p
+                           (mapcar #'car emrs-dirdiff--sections))))))
+
 (ert-deftest emrs-dirdiff-test-section-view ()
   "The section view renders sections in order; v keeps point; TAB folds."
   (emrs-dirdiff-test--with-fixture (_root _a _b buffer)
