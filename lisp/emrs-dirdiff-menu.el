@@ -78,7 +78,7 @@
   "Describe the marks."
   (let* ((marks (emrs-dirdiff-menu--var 'emrs-dirdiff--marks))
          (n (if marks (hash-table-count marks) 0)))
-    (if (> n 0) (format "Act on the %d marked entries" n)
+    (if (> n 0) (format "Act on the %d marked %s" n (if (= n 1) "entry" "entries"))
       "Act on the entry at point")))
 
 ;;;###autoload (autoload 'emrs-dirdiff-menu "emrs-dirdiff-menu" nil t)

@@ -5,20 +5,16 @@ the architecture docs or an ADR.
 
 ## Next
 
-1. Do the manual checks of task 10 in
+1. Finish the manual checks of task 10 in
    [`specs/2026-10-14-emrs-dirdiff-v1.md`](specs/2026-10-14-emrs-dirdiff-v1.md):
-   - a GUI frame and a terminal frame;
-   - a light and a dark theme;
-   - ediff from the buffer;
-   - the transient menu;
-   - a real comparison of two trees of at least 100,000 files, timed
-     against `diff -rq`.
-
-   Then tick task 10 and set the spec to implemented.
+   a terminal frame (`emacs -nw`), and the keys typed by hand rather
+   than called as commands. The GUI frame, both themes, ediff, the menu
+   and the 100,000-file timing are done (README, Status). Then tick task
+   10 and set the spec to implemented.
 2. Push the branch and watch the first CI run (Linux and macOS, Emacs 30.1
    and 31.1). Emacs 30.1 and macOS have never run. The responsiveness
    limit on CI is 150 ms.
-3. Commit and merge.
+3. Merge the branch.
 
 ## Watch out for
 

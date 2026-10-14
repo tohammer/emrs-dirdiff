@@ -29,6 +29,8 @@
 
 (require 'cl-lib)
 (require 'diff)
+;; The faces inherit from diff-mode's, which are defined there.
+(require 'diff-mode)
 (require 'seq)
 (require 'subr-x)
 (require 'emrs)

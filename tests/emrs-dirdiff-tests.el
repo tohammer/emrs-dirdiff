@@ -1831,7 +1831,7 @@ behind; the parent's identical entries are fetched afresh after it."
       (puthash "changed.txt" t emrs-dirdiff--marks)
       (should (equal (emrs-dirdiff-menu--view) "view: sections"))
       (should (equal (emrs-dirdiff-menu--filter-status) "status filter [changed]"))
-      (should (equal (emrs-dirdiff-menu--marks) "Act on the 1 marked entries"))
+      (should (equal (emrs-dirdiff-menu--marks) "Act on the 1 marked entry"))
       (emrs-dirdiff-toggle-whitespace)
       (should (eq (emrs-dirdiff-test--wait-done buffer) 'done))
       (should (equal (emrs-dirdiff-menu--whitespace) "ignore whitespace [on]"))
