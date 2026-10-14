@@ -1468,8 +1468,12 @@ In the tree view it goes to directories, in the section view to headers."
   "Show only entries whose relative path contains SUBSTRING; \"\" clears.
 The match ignores case unless SUBSTRING has an uppercase letter.  The
 tree keeps the ancestors of matching entries."
-  (interactive (list (read-string "Filter by name (empty clears): "
-                                  emrs-dirdiff--name-filter))
+  (interactive (list (read-string
+                      (if emrs-dirdiff--name-filter
+                          (format "Filter by name (now \"%s\"; empty clears): "
+                                  emrs-dirdiff--name-filter)
+                        "Filter by name: ")
+                      nil nil nil))
                emrs-dirdiff-mode)
   (if (equal substring "")
       (setq emrs-dirdiff--name-filter nil

@@ -1,6 +1,6 @@
 # emrs-dirdiff version 1: directory comparison
 
-Status: approved
+Status: implemented
 Date: 2026-10-14
 
 ## Purpose
@@ -420,5 +420,5 @@ six are implemented as proposed:
 - [x] 9. The transient menu on `?`, showing the current settings. *Done
   when* every key of section Keys is reachable from it and the menu
   reflects toggled settings.
-- [ ] 10. README usage section, faces and options documented, the manual
+- [x] 10. README usage section, faces and options documented, the manual
   checks of section Testing done and their results recorded.

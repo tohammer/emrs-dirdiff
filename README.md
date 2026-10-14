@@ -22,8 +22,8 @@ Checked automatically:
 - CI is configured for Linux and macOS with Emacs 30.1 and 31.1. It has
   not run yet, because nothing is pushed.
 
-Checked by hand on Linux with Emacs 31.1, in a GUI frame driven by a
-script that exported screenshots of the frame (2026-10-14):
+Checked on Linux with Emacs 31.1 (2026-10-14). In a GUI frame driven by a
+script that exported screenshots of the frame:
 
 - The tree and the section view in the default theme, `modus-operandi`
   and `modus-vivendi`.
@@ -32,10 +32,13 @@ script that exported screenshots of the frame (2026-10-14):
   handling of the results, took 0.50 s against 1.00 s for `diff -rq`, and
   Emacs's event loop never paused more than 30 ms.
 
+In a terminal frame (`emacs -nw`, `xterm-256color`), driven by real
+keystrokes through a pseudo-terminal: navigation, folding, the section
+view, the menu, the name filter, copy with its prompt, delete of a
+one-sided file and the diff buffer. All glyphs (`▾ ▸ ↔ → − ·`) display.
+
 Not checked:
 
-- A terminal frame.
-- Typing the keys by hand (the checks above call the commands).
 - Emacs 30.1 at all.
 - macOS.
 
