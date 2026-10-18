@@ -40,16 +40,13 @@ Partly done. `.github/workflows/release.yml` calls emrs's reusable release
 workflow (emrs spec `2026-10-17-release-pipeline`, emrs ADRs 0004–0007): a
 tag `v<version>` builds, tests and publishes the module for linux-x86_64,
 linux-aarch64 and macos-aarch64 with `SHA256SUMS`. Release v0.1.0 was made
-this way on 2026-10-18; its tag points at commit 0e523f4 of the branch
-`ci/release-workflow`, not at `master`. Open:
+this way on 2026-10-18 from commit 0e523f4, which PR #2 merged into
+`master`. Open:
 
-- Bump the crate version to `0.2.0-dev`. The installer downloads the release
-  of the exact version, so `master` must not keep a released version (emrs
-  ADR 0004).
 - Users still build with cargo: use emrs's installer `emrs-install.el` once
   it exists (emrs backlog "Installer for prebuilt modules") in place of
-  `lisp/emrs-dirdiff-build.el`, and describe it in the README. Until then
-  the README could point to the release files for a manual install.
+  `lisp/emrs-dirdiff-build.el`, and describe it in the README in place of
+  the manual steps of "Prebuilt module".
 - The release tests only load the module (smoke test). Run the ERT suite
   against the downloaded file: a `test-command` that uses `EMRS_MODULE_DIR`
   and `EMRS_EL_DIR` needs `tests/run-ert.sh` to take a prebuilt module
