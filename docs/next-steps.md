@@ -5,10 +5,16 @@ the architecture docs or an ADR.
 
 ## Next
 
-1. Merge PR #1 (`feat/emrs-dirdiff-v1`) once its CI is green.
+1. Pick the next item of the backlog's "Prebuilt module binaries": the
+   README pointing to the release files for a manual install, or the ERT
+   suite run against the released module.
 
 ## Watch out for
 
+- After each release, bump the crate version to the next `-dev` (and the
+  Elisp `Version:` header to the matching `-snapshot`, since Emacs rejects
+  `-dev`): the installer downloads the release of the exact crate version
+  (emrs ADR 0004).
 - The emrs pin in `Cargo.toml` is a commit hash: bump it deliberately and
   run the full suite (the bump policy the comment in `Cargo.toml` points
   to).
