@@ -50,7 +50,8 @@ Requirements:
 
 - Emacs 30.1 or later, built with module support (`module-file-suffix` is
   non-nil).
-- Rust 1.88 or later and `cargo`.
+- Rust 1.88 or later and `cargo`, unless you use a prebuilt module (see
+  below).
 - The `emrs` Elisp package (`elisp/emrs.el` of the
   [emrs repository](https://github.com/tohammer/emrs)).
 
@@ -92,6 +93,25 @@ Update `emrs` together with `emrs-dirdiff`. This recipe has not been tested.
    `.dylib`) to a directory on `load-path` as `emrs-dirdiff-module` plus
    `module-file-suffix`.
 3. Put `lisp/*.el` and `emrs.el` on `load-path` and `(require 'emrs-dirdiff)`.
+
+### Prebuilt module
+
+Each [release](https://github.com/tohammer/emrs-dirdiff/releases) has the
+module for Linux x86-64 and aarch64 (glibc 2.28 or later) and macOS on
+Apple silicon, as `emrs-dirdiff-module-<platform>.so` (macOS: `.dylib`),
+with a `SHA256SUMS` file. To use one without Rust:
+
+1. Check out the release's tag (`v0.1.0`): the module must match the
+   Elisp of the same version.
+2. Download the file for your platform and check it with
+   `sha256sum --check --ignore-missing SHA256SUMS` (macOS:
+   `shasum -a 256 --check --ignore-missing SHA256SUMS`).
+3. Rename it to `emrs-dirdiff-module.so` (`.dylib`) and put it in the
+   checkout's `lisp/` directory, or in another directory on `load-path`.
+4. Continue with step 3 of the manual installation.
+
+The package asks to build the module when the file is older than the
+sources; a module downloaded after the checkout is newer.
 
 ## Usage
 

@@ -5,9 +5,8 @@ the architecture docs or an ADR.
 
 ## Next
 
-1. Pick the next item of the backlog's "Prebuilt module binaries": the
-   README pointing to the release files for a manual install, or the ERT
-   suite run against the released module.
+1. Run the ERT suite against the released module (backlog, "Prebuilt
+   module binaries").
 
 ## Watch out for
 

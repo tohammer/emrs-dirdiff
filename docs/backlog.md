@@ -45,8 +45,8 @@ this way on 2026-10-18 from commit 0e523f4, which PR #2 merged into
 
 - Users still build with cargo: use emrs's installer `emrs-install.el` once
   it exists (emrs backlog "Installer for prebuilt modules") in place of
-  `lisp/emrs-dirdiff-build.el`, and describe it in the README. Until then
-  the README could point to the release files for a manual install.
+  `lisp/emrs-dirdiff-build.el`, and describe it in the README in place of
+  the manual steps of "Prebuilt module".
 - The release tests only load the module (smoke test). Run the ERT suite
   against the downloaded file: a `test-command` that uses `EMRS_MODULE_DIR`
   and `EMRS_EL_DIR` needs `tests/run-ert.sh` to take a prebuilt module
