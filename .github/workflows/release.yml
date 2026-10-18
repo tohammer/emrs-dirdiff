@@ -1,0 +1,23 @@
+# Builds the module for each platform with emrs's reusable release workflow,
+# tests it in Emacs and, on a tag v<version>, attaches the binaries and
+# SHA256SUMS to the release.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # TODO: switch both refs to master once tohammer/emrs#10 is merged.
+    uses: tohammer/emrs/.github/workflows/module-release.yml@feat/release-pipeline
+    with:
+      cargo-emacs: feat/release-pipeline
+      # Windows is untested (README, Status).
+      platforms: '["linux-x86_64", "linux-aarch64", "macos-aarch64"]'
+      publish: ${{ startsWith(github.ref, 'refs/tags/v') }}
