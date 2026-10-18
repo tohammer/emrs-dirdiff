@@ -43,9 +43,6 @@ linux-aarch64 and macos-aarch64 with `SHA256SUMS`. Release v0.1.0 was made
 this way on 2026-10-18; its tag points at commit 0e523f4 of the branch
 `ci/release-workflow`, not at `master`. Open:
 
-- The workflow refers to the emrs branch `feat/release-pipeline` (in `uses:`
-  and `cargo-emacs:`). Switch both to `master` once tohammer/emrs#10 is
-  merged, then merge `ci/release-workflow`.
 - Bump the crate version to `0.2.0-dev`. The installer downloads the release
   of the exact version, so `master` must not keep a released version (emrs
   ADR 0004).
