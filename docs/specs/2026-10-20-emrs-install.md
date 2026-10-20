@@ -1,6 +1,6 @@
 # The module through emrs-install
 
-Status: approved
+Status: implemented
 Date: 2026-10-20
 
 ## Purpose
@@ -201,3 +201,15 @@ today).
   module binaries" removed), `docs/next-steps.md` (the `-dev` watch-out
   replaced by the `-snapshot` rule). *Done when* the doc-checker reports
   nothing stale.
+
+## Changes during implementation
+
+- The manual checks of task 3 ran in `emacs --batch` with a temporary
+  `user-emacs-directory`, `noninteractive` bound to nil and the prompts
+  answered by stubs, not in an interactive `emacs -Q`. The `load-path`
+  pointed to symlinks to the checkout's `lisp/*.el`, so the installer found
+  the checkout through the true names, as with straight.
+- The responsiveness test failed locally against its 50 ms limit while a
+  backup used the machine; alternating runs of this branch and of the
+  commit before it showed no difference, and the suite passes with CI's
+  150 ms limit.
