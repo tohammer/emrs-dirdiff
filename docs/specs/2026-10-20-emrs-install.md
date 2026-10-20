@@ -182,7 +182,7 @@ today).
 
 ## Tasks
 
-- [ ] 1. Bump the emrs pin to `13ba6c9` (or later `master`) and the
+- [x] 1. Bump the emrs pin to `13ba6c9` (or later `master`) and the
   version to `0.2.0-snapshot` in `Cargo.toml` (and `Cargo.lock`) and the
   `;; Version:` header. *Done when* `cargo test` and `tests/run-ert.sh`
   pass, and `emrs-install.el` is in the emrs checkout Cargo resolved.

@@ -67,7 +67,7 @@ checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 [[package]]
 name = "emrs"
 version = "0.1.0"
-source = "git+https://github.com/tohammer/emrs.git?rev=f05b9fac93aaeff7679e7e057af744cf6807c043#f05b9fac93aaeff7679e7e057af744cf6807c043"
+source = "git+https://github.com/tohammer/emrs.git?rev=13ba6c9793c9d7c6b50fefe50d3cea99cf237326#13ba6c9793c9d7c6b50fefe50d3cea99cf237326"
 dependencies = [
  "libc",
  "serde",
@@ -75,7 +75,7 @@ dependencies = [
 
 [[package]]
 name = "emrs-dirdiff"
-version = "0.2.0-dev"
+version = "0.2.0-snapshot"
 dependencies = [
  "emrs",
  "ignore",
