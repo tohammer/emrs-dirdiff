@@ -53,6 +53,14 @@ this way on 2026-10-18 from commit 0e523f4, which PR #2 merged into
   instead of building one.
 - Windows is left out of `platforms` because it is untested (README,
   Status).
+- The crate version (`0.2.0-dev` in `Cargo.toml`) differs from the
+  header of `emrs-dirdiff.el` (`0.2.0-snapshot`). Use one string in both,
+  `<next>-snapshot`, since package.el rejects `-dev` (as quarry's ADR
+  0026). Origin: comparison with quarry's prebuilt-modules spec,
+  2026-10-19. Revisit with the next version bump.
+- For the full ERT suite in the release, take over quarry's change to
+  `tests/run-ert.sh` (`EMRS_MODULE_FILE`, `EMRS_EL_DIR`; quarry spec
+  `2026-10-19-prebuilt-modules`) once it has run in a quarry release.
 
 ## Large results: show more
 
