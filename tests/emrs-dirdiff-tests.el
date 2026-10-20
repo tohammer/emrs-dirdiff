@@ -8,6 +8,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'lisp-mnt)
 (require 'emrs-dirdiff)
 
 ;; emrs-dirdiff resolves both roots with `file-truename'; resolve the
@@ -1747,72 +1748,42 @@ behind; the parent's identical entries are fetched afresh after it."
       (when (buffer-live-p buffer) (kill-buffer buffer))
       (delete-directory root t))))
 
-;;;; Building
+;;;; Module
 
-(ert-deftest emrs-dirdiff-test-module-staleness ()
-  "A module older than src/**/*.rs, Cargo.toml or Cargo.lock is offered a rebuild."
-  (let* ((repo (file-name-as-directory (make-temp-file "emrs-dirdiff-repo" t)))
-         (module (emrs-dirdiff-build--module-file repo))
-         (old (time-subtract nil 1000))
-         (sources (list "Cargo.toml" "Cargo.lock" "src/lib.rs" "src/x/y.rs")))
-    (unwind-protect
-        (progn
-          (dolist (file sources)
-            (emrs-dirdiff-test--put repo file "")
-            (set-file-times (concat repo file) old))
-          ;; No module: missing, not stale.
-          (should-not (emrs-dirdiff--module-stale-p repo))
-          (emrs-dirdiff-test--put repo (file-relative-name module repo) "")
-          (should-not (emrs-dirdiff--module-stale-p repo))
-          (dolist (file sources)
-            (set-file-times (concat repo file) nil)
-            (set-file-times module (time-subtract nil 10))
-            (should (emrs-dirdiff--module-stale-p repo))
-            (set-file-times (concat repo file) old))
-          (should-not (emrs-dirdiff--module-stale-p repo))
-          (set-file-times (concat repo "src/x/y.rs") nil)
-          (set-file-times module (time-subtract nil 10))
-          ;; Before the first load it asks; yes starts the build.
-          (let ((noninteractive nil) asked built loaded)
-            (cl-letf (((symbol-function 'emrs-dirdiff-build--find-repo) (lambda () repo))
-                      ((symbol-function 'emrs-dirdiff-build--loaded-p) #'ignore)
-                      ((symbol-function 'emrs-dirdiff-build-module) (lambda () (setq built t)))
-                      ((symbol-function 'emrs-load-module)
-                       (lambda (&rest _) (setq loaded t) 'module)))
-              (cl-letf (((symbol-function 'y-or-n-p) (lambda (p) (push p asked) t)))
-                (let ((err (should-error (emrs-dirdiff--load-module) :type 'user-error)))
-                  (should (string-match-p "Building" (cadr err)))))
-              (should built)
-              (should-not loaded)
-              (should (string-match-p "older than its sources" (car asked)))
-              ;; No loads the old module.
-              (setq built nil)
-              (cl-letf (((symbol-function 'y-or-n-p) (lambda (_) nil)))
-                (should (eq (emrs-dirdiff--load-module) 'module)))
-              (should-not built)
-              (should loaded))))
-      (delete-directory repo t))))
+(defconst emrs-dirdiff-test--file (or load-file-name buffer-file-name)
+  "The file of these tests, from which the repository root is found.")
 
-(ert-deftest emrs-dirdiff-test-module-missing-messages ()
-  "Without the repository the error does not suggest building the module."
-  (let ((repo (file-name-as-directory (make-temp-file "emrs-dirdiff-repo" t)))
-        (repo-found nil))
-    (unwind-protect
-        (cl-letf (((symbol-function 'emrs-dirdiff-build--find-repo)
-                   (lambda () (and repo-found repo)))
-                  ((symbol-function 'emrs-dirdiff-build--loaded-p) #'ignore)
-                  ((symbol-function 'emrs-load-module)
-                   (lambda (&rest _)
-                     (signal 'file-missing '("Cannot open load file" "No such file or directory"
-                                             "emrs-dirdiff-module")))))
-          (let ((err (should-error (emrs-dirdiff--load-module) :type 'user-error)))
-            (should-not (string-match-p "emrs-dirdiff-build-module" (cadr err)))
-            (should (string-match-p "built from the emrs-dirdiff repository" (cadr err))))
-          (emrs-dirdiff-test--put repo "Cargo.toml" "")
-          (setq repo-found t)
-          (let ((err (should-error (emrs-dirdiff--load-module) :type 'user-error)))
-            (should (string-match-p "M-x emrs-dirdiff-build-module" (cadr err)))))
-      (delete-directory repo t))))
+(defun emrs-dirdiff-test--root ()
+  "Return the repository root, the directory above tests/ holding Cargo.toml."
+  (file-name-as-directory
+   (file-truename (locate-dominating-file emrs-dirdiff-test--file "Cargo.toml"))))
+
+(ert-deftest emrs-dirdiff-test-module-versions-agree ()
+  "Cargo.toml, the Version header, the constant and the loaded module agree."
+  (let* ((root (emrs-dirdiff-test--root))
+         (cargo (with-temp-buffer
+                  (insert-file-contents (expand-file-name "Cargo.toml" root))
+                  (goto-char (point-min))
+                  (re-search-forward "^version *= *\"\\([^\"]+\\)\"")
+                  (match-string 1)))
+         (header (with-temp-buffer
+                   (insert-file-contents (expand-file-name "lisp/emrs-dirdiff.el" root))
+                   (lm-version)))
+         (loaded (progn (emrs-dirdiff--load-module)
+                        (plist-get (emrs-module-info 'emrs-dirdiff) :version))))
+    (should (equal cargo header))
+    (should (equal cargo emrs-dirdiff-module-version))
+    (should (equal cargo loaded))))
+
+(ert-deftest emrs-dirdiff-test-module-registration ()
+  "The module is registered with the constant's version, the release URL and this checkout."
+  (let ((entry (gethash 'emrs-dirdiff emrs-install--registry)))
+    (should (equal (plist-get entry :version) emrs-dirdiff-module-version))
+    (should (equal (plist-get entry :url)
+                   "https://github.com/tohammer/emrs-dirdiff/releases/download"))
+    (should (equal (file-name-as-directory
+                    (file-truename (emrs-install--checkout 'emrs-dirdiff)))
+                   (emrs-dirdiff-test--root)))))
 
 ;;;; The menu
 

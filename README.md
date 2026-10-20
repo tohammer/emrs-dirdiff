@@ -50,20 +50,35 @@ Requirements:
 
 - Emacs 30.1 or later, built with module support (`module-file-suffix` is
   non-nil).
-- Rust 1.88 or later and `cargo`, unless you use a prebuilt module (see
-  below).
-- The `emrs` Elisp package (`elisp/emrs.el` of the
-  [emrs repository](https://github.com/tohammer/emrs)).
+- The `emrs` Elisp package: `elisp/emrs.el` and `elisp/emrs-install.el` of
+  the [emrs repository](https://github.com/tohammer/emrs).
+- Rust 1.88 or later and `cargo`, only to build the module yourself: for a
+  checkout of `master` (a `-snapshot` version, which has no release) or a
+  platform without a release file.
 
-The module is built on your machine with cargo and installed as
-`lisp/emrs-dirdiff-module` plus `module-file-suffix` inside this
-repository, where the package finds it. The package builds it on first use,
-after asking, when the file is missing or older than the sources
-(`src/**/*.rs`, `Cargo.toml`, `Cargo.lock`; declining a rebuild loads the
-old module); you can
-also run `M-x emrs-dirdiff-build-module` at any time and restart Emacs to
-use a rebuilt module. If cargo is not on `PATH`, set
-`emrs-dirdiff-build-cargo-program`.
+The module comes from emrs's installer, `emrs-install.el`. On the first
+command that needs it, the installer uses, in this order:
+
+1. The module installed for this version under
+   `emrs/modules/emrs-dirdiff/<version>/` under `user-emacs-directory`, or
+   `emrs-dirdiff-module` plus `module-file-suffix` on `load-path`.
+2. For a released version, the
+   [release](https://github.com/tohammer/emrs-dirdiff/releases) file for
+   your platform (Linux x86-64 and aarch64 with glibc 2.28 or later, macOS
+   on Apple silicon), after asking, checked against the release's
+   `SHA256SUMS`.
+3. A `cargo build --release` in the package's checkout, after asking. The
+   build runs in the buffer `*emrs-install emrs-dirdiff*`; run the command
+   again when it is done. When the sources are newer than a local build,
+   the installer offers to rebuild it.
+
+`M-x emrs-install-module` installs the module again, `M-x
+emrs-install-build` builds it, and `M-x emrs-install-clean` deletes
+versions no longer used. Whether to download without asking
+(`emrs-install-download`), the install directory and the cargo program
+are user options of emrs; see its README, section
+["Installing modules for users"](https://github.com/tohammer/emrs#installing-modules-for-users).
+Emacs cannot unload a module: restart it to use a new build.
 
 ### Doom Emacs (straight)
 
@@ -71,47 +86,30 @@ In `packages.el`:
 
 ```elisp
 (package! emrs
-  :recipe (:host github :repo "tohammer/emrs" :files ("elisp/emrs.el")))
+  :recipe (:host github :repo "tohammer/emrs" :files ("elisp/*.el")))
 (package! emrs-dirdiff
-  :recipe (:host github :repo "tohammer/emrs-dirdiff" :files ("lisp/*.el")
-           :pre-build ((load (expand-file-name "lisp/emrs-dirdiff-build.el") nil t)
-                       (emrs-dirdiff-build-module-sync))))
+  :recipe (:host github :repo "tohammer/emrs-dirdiff" :files ("lisp/*.el")))
 ```
 
-`doom sync` clones both repositories and the `:pre-build` form runs
-`cargo build --release` in this checkout. `emrs-dirdiff-build-module-sync`
-never signals: without a Rust toolchain, or if the build fails, `doom sync`
-still completes with a warning, and the first use asks to build.
-
-Update `emrs` together with `emrs-dirdiff`. This recipe has not been tested.
+`doom sync` clones both repositories. The recipe follows `master`, so the
+first emrs-dirdiff command after an update asks to build the module with
+cargo (ADR [0004](docs/decisions/0004-module-comes-from-emrs-install-on-first-use.md)).
+Update `emrs` together with `emrs-dirdiff`. This recipe has not been
+tested.
 
 ### Manual installation
 
-1. `cargo build --release`, or `M-x emrs-dirdiff-build-module` when
-   `emrs-dirdiff.el` is loaded from the checkout.
-2. Without the command, copy `target/release/libemrs_dirdiff.so` (macOS:
-   `.dylib`) to a directory on `load-path` as `emrs-dirdiff-module` plus
-   `module-file-suffix`.
-3. Put `lisp/*.el` and `emrs.el` on `load-path` and `(require 'emrs-dirdiff)`.
+1. Clone this repository and emrs. For a prebuilt module, check out a
+   release tag: the Elisp and the module must have the same version.
+   v0.1.0 predates the installer; its own README describes how to install
+   it.
+2. Put `lisp/` and emrs's `elisp/` on `load-path` and
+   `(require 'emrs-dirdiff)`. The installer gets the module on first use.
 
-### Prebuilt module
-
-Each [release](https://github.com/tohammer/emrs-dirdiff/releases) has the
-module for Linux x86-64 and aarch64 (glibc 2.28 or later) and macOS on
-Apple silicon, as `emrs-dirdiff-module-<platform>.so` (macOS: `.dylib`),
-with a `SHA256SUMS` file. To use one without Rust:
-
-1. Check out the release's tag (`v0.1.0`): the module must match the
-   Elisp of the same version.
-2. Download the file for your platform and check it with
-   `sha256sum --check --ignore-missing SHA256SUMS` (macOS:
-   `shasum -a 256 --check --ignore-missing SHA256SUMS`).
-3. Rename it to `emrs-dirdiff-module.so` (`.dylib`) and put it in the
-   checkout's `lisp/` directory, or in another directory on `load-path`.
-4. Continue with step 3 of the manual installation.
-
-The package asks to build the module when the file is older than the
-sources; a module downloaded after the checkout is newer.
+To place a module by hand instead, download the file for your platform
+from the release, check it with `sha256sum --check --ignore-missing
+SHA256SUMS` (macOS: `shasum -a 256 --check --ignore-missing SHA256SUMS`),
+and put it on `load-path` as `emrs-dirdiff-module.so` (macOS: `.dylib`).
 
 ## Usage
 
@@ -308,7 +306,6 @@ it was created.
 | `emrs-dirdiff-ignore-whitespace` | `nil` | Text files (no NUL byte in the first 8 KiB, at most 4 MiB) that differ only in whitespace count as identical |
 | `emrs-dirdiff-show-hidden` | `t` | Names starting with a dot are compared |
 | `emrs-dirdiff-default-view` | `tree` | The first view of a buffer: `tree` or `sections` |
-| `emrs-dirdiff-build-cargo-program` | see Installation | The cargo executable used to build the module |
 
 Faces:
 
@@ -352,7 +349,17 @@ commands are in [`docs/benchmark.md`](docs/benchmark.md).
 
 `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D warnings`
 and `cargo test` check the Rust side; `tests/run-ert.sh` builds the module
-and runs the ERT suite in batch mode with the module assertions on.
+and runs the ERT suite in batch mode with the module assertions on, with a
+temporary `emrs-install-directory` and downloads off.
+
+To release version X.Y.Z: set it in `Cargo.toml` (`version`; run `cargo
+build` so `Cargo.lock` follows), in `emrs-dirdiff-module-version` and in
+the `;; Version:` header of `lisp/emrs-dirdiff.el` (a test checks that they
+agree), merge, and push the tag `vX.Y.Z`; the release workflow builds,
+tests and publishes the module files. Then set the three to the next
+`-snapshot` version, for example `0.3.0-snapshot` (emrs ADR 0008): the
+installer downloads only the release of the exact version and never for a
+`-snapshot` one.
 
 ## Licence
 

@@ -186,16 +186,16 @@ today).
   version to `0.2.0-snapshot` in `Cargo.toml` (and `Cargo.lock`) and the
   `;; Version:` header. *Done when* `cargo test` and `tests/run-ert.sh`
   pass, and `emrs-install.el` is in the emrs checkout Cargo resolved.
-- [ ] 2. Register the module, load it with `emrs-install-load`, remove
+- [x] 2. Register the module, load it with `emrs-install-load`, remove
   `lisp/emrs-dirdiff-build.el` and the functions listed under Design,
   update `tests/run-ert.sh` as described, replace the two build tests with
   the two new tests. *Done when* `tests/run-ert.sh` passes, byte
   compilation of `lisp/*.el` reports no warnings, `checkdoc` reports
   nothing for `lisp/emrs-dirdiff.el`, and `grep -r emrs-dirdiff-build`
   finds nothing outside `docs/specs/` and `docs/decisions/`.
-- [ ] 3. Manual checks as described under Testing. *Done when* both pass
+- [x] 3. Manual checks as described under Testing. *Done when* both pass
   in an Emacs whose `user-emacs-directory` is temporary.
-- [ ] 4. Documentation: README as described, `docs/architecture.md`
+- [x] 4. Documentation: README as described, `docs/architecture.md`
   (components table, How it fits together), `docs/architecture/elisp.md`
   (Loading, Build), `docs/backlog.md` (the installer bullet of "Prebuilt
   module binaries" removed), `docs/next-steps.md` (the `-dev` watch-out

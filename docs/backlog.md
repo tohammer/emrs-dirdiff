@@ -41,23 +41,15 @@ workflow (emrs spec `2026-10-17-release-pipeline`, emrs ADRs 0004–0007): a
 tag `v<version>` builds, tests and publishes the module for linux-x86_64,
 linux-aarch64 and macos-aarch64 with `SHA256SUMS`. Release v0.1.0 was made
 this way on 2026-10-18 from commit 0e523f4, which PR #2 merged into
-`master`. Open:
+`master`. The package gets the module through emrs's `emrs-install.el`
+(ADR 0004). Open:
 
-- Users still build with cargo: use emrs's installer `emrs-install.el` once
-  it exists (emrs backlog "Installer for prebuilt modules") in place of
-  `lisp/emrs-dirdiff-build.el`, and describe it in the README in place of
-  the manual steps of "Prebuilt module".
 - The release tests only load the module (smoke test). Run the ERT suite
   against the downloaded file: a `test-command` that uses `EMRS_MODULE_DIR`
   and `EMRS_EL_DIR` needs `tests/run-ert.sh` to take a prebuilt module
   instead of building one.
 - Windows is left out of `platforms` because it is untested (README,
   Status).
-- The crate version (`0.2.0-dev` in `Cargo.toml`) differs from the
-  header of `emrs-dirdiff.el` (`0.2.0-snapshot`). Use one string in both,
-  `<next>-snapshot`, since package.el rejects `-dev` (as quarry's ADR
-  0026). Origin: comparison with quarry's prebuilt-modules spec,
-  2026-10-19. Revisit with the next version bump.
 - For the full ERT suite in the release, take over quarry's change to
   `tests/run-ert.sh` (`EMRS_MODULE_FILE`, `EMRS_EL_DIR`; quarry spec
   `2026-10-19-prebuilt-modules`) once it has run in a quarry release.

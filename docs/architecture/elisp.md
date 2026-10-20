@@ -16,12 +16,14 @@ in `emrs-dirdiff--instance-error`, shown in the header, and the next `g`
 starts a new instance) and stopped, with its stream and timers, from
 `kill-buffer-hook` and `change-major-mode-hook` (`emrs-dirdiff--kill`).
 
-Loading (`emrs-dirdiff--load-module`): before the first load, when the
-repository is found (the parent of the true `lisp/`, holding
-`Cargo.toml`) and the module there is older than the newest of
-`src/**/*.rs`, `Cargo.toml` and `Cargo.lock`, it offers a rebuild
-(declining loads the old module). A missing module is offered a build;
-without the repository the error says the module must be built from it.
+Loading (`emrs-dirdiff--load-module`) is `emrs-install-load` of emrs's
+`emrs-install.el`. The module is registered at load time with
+`emrs-dirdiff-module-version`, the release URL and this file as `:source`
+(ADR 0004). The installer finds the installed version under
+`emrs-install-directory`, else `emrs-dirdiff-module` on `load-path`, else
+downloads the release file (not for `-snapshot` versions) or offers a
+cargo build in the checkout; it also offers a rebuild of a local build
+older than its sources and warns when the module reports another version.
 
 The other commands (keys in the spec; functions are `emrs-dirdiff-*`):
 `open` (RET: a diff-mode buffer from `diff-no-select`, with `-w` when
@@ -178,11 +180,3 @@ settings of the comparison buffer the menu was opened from
 marks or the entry at point will be used. The settings, marks and
 movement commands carry `:transient t`, so the menu stays open and shows
 the new state.
-
-## Build
-
-`lisp/emrs-dirdiff-build.el` runs `cargo build --release` and installs the
-library as `lisp/emrs-dirdiff-module` plus `module-file-suffix`
-(`emrs-dirdiff-build-module` asynchronously, `-sync` for package managers,
-which never signals). It is loaded on its own by `:pre-build`, so it
-depends on nothing.

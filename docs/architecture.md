@@ -24,23 +24,24 @@ one at a time (ADR 0003). Timing against `diff -rq`:
 | `src/session.rs` | One comparison: tasks on the pool, per-directory completion, the stream, the store of identical entries, cancellation | `walk`, `compare`, `rayon`, `emrs` |
 | `src/walk.rs` | Lists one directory level of both sides, applies the ignore files, pairs entries by name | `ignore` |
 | `src/compare.rs` | Whether two files are the same; line counts | `similar` |
-| `lisp/emrs-dirdiff.el` | Module loading, commands, the result model, the buffer with its views, marks, actions, the rescan queue | `emrs.el`, `emrs-dirdiff-build.el` |
+| `lisp/emrs-dirdiff.el` | Module loading, commands, the result model, the buffer with its views, marks, actions, the rescan queue | `emrs.el`, `emrs-install.el` |
 | `lisp/emrs-dirdiff-menu.el` | `emrs-dirdiff-menu`, a transient prefix bound to `?`; autoloaded, so transient loads on first use | `transient`, `emrs-dirdiff.el` |
-| `lisp/emrs-dirdiff-build.el` | `emrs-dirdiff-build-module` (async) and `-sync`: `cargo build --release`, install as `lisp/emrs-dirdiff-module` + `module-file-suffix`. Depends on nothing, so a package manager can load it first | cargo |
-| `tests/run-ert.sh` | Builds the debug module, copies it and the Lisp files to `target/elisp` and byte-compiles them there, finds `emrs.el` through `cargo metadata`, runs ERT with `--module-assertions` | `tests/emrs-dirdiff-tests.el` |
+| `tests/run-ert.sh` | Builds the debug module, copies it and the Lisp files to `target/elisp` and byte-compiles them there, finds emrs's `elisp/` directory (`emrs.el`, `emrs-install.el`) through `cargo metadata`, runs ERT with `--module-assertions`, a temporary `emrs-install-directory` and downloads off | `tests/emrs-dirdiff-tests.el` |
 | `.github/workflows/ci.yml` | Rust checks, MSRV, and the ERT suite on Emacs 30.1 and 31.1 on Linux and macOS (responsiveness limit 150 ms there) | |
 
 ## How it fits together
 
-Elisp calls `emrs-dirdiff--start`, which loads the module (the file next to
-the real `emrs-dirdiff.el`, else `emrs-dirdiff-module` on `load-path`, else
-it offers to build) and starts the service with
+Elisp calls `emrs-dirdiff--start`, which loads the module through
+emrs's installer (`emrs-install-load`: the installed version, else
+`emrs-dirdiff-module` on `load-path`, else a download or a cargo build;
+ADR 0004) and starts the service with
 `(emrs-start 'emrs-dirdiff "dirdiff" (list :a A :b B))`. The start runs on
 the module's side: it fails, with a message naming the path, unless both
 are existing directories, and the failure reaches Elisp as the instance
 state `failed` and through `:on-exit`. `emrs-dirdiff--stop` stops the
 instance. The pinned emrs commit (`Cargo.toml`) and the `emrs.el` on
-`load-path` must match.
+`load-path` must match. The module version is one string in `Cargo.toml`,
+`emrs-dirdiff-module-version` and the `;; Version:` header (emrs ADR 0008).
 
 A comparison is an `emrs-call-stream` with `:compare`. The module walks
 both trees on the instance's pool and streams one item per difference,
