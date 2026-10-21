@@ -10,13 +10,17 @@ the architecture docs or an ADR.
 
 ## Watch out for
 
-- After each release, bump the crate version to the next `-dev` (and the
-  Elisp `Version:` header to the matching `-snapshot`, since Emacs rejects
-  `-dev`): the installer downloads the release of the exact crate version
-  (emrs ADR 0004).
-- The emrs pin in `Cargo.toml` is a commit hash: bump it deliberately and
-  run the full suite (the bump policy the comment in `Cargo.toml` points
-  to).
+- Version: one string in `Cargo.toml`, `emrs-dirdiff-module-version` and the
+  `;; Version:` header; `X.Y.Z-snapshot` between releases (emrs ADR 0008,
+  release steps in the README, section Development).
+- The first release with the installer (v0.2.0) is the first check of
+  emrs-dirdiff's download path: install it in a fresh `emacs -Q` without
+  cargo.
+- The emrs pin in `Cargo.toml` is a commit hash (now that of emrs v0.2.0):
+  bump it deliberately and run the full suite (the bump policy the comment
+  in `Cargo.toml` points to). Bump the `@v0.2.0` of emrs's release workflow
+  in `.github/workflows/release.yml` and `(emrs "0.2.0")` in
+  `Package-Requires` together with it.
 - emrs encodes Rust enums as one-element lists and gives modules no way to
   end a stream `cancelled`, so kinds and statuses are strings and streams
   stopped by the module end `failed` with "cancelled" (spec, "The

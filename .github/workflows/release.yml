@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   release:
-    uses: tohammer/emrs/.github/workflows/module-release.yml@master
+    uses: tohammer/emrs/.github/workflows/module-release.yml@v0.2.0
     with:
       # Windows is untested (README, Status).
       platforms: '["linux-x86_64", "linux-aarch64", "macos-aarch64"]'

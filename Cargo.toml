@@ -1,6 +1,6 @@
 [package]
 name = "emrs-dirdiff"
-version = "0.2.0-dev"
+version = "0.2.0-snapshot"
 publish = false
 edition = "2024"
 rust-version = "1.88"
@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 # Pinned to a commit; bump deliberately (docs/next-steps.md).
-emrs = { git = "https://github.com/tohammer/emrs.git", rev = "f05b9fac93aaeff7679e7e057af744cf6807c043" }
+emrs = { git = "https://github.com/tohammer/emrs.git", rev = "8a3fa355b3cf4d4bea7e73042f8255f0fc9e5307" }
 serde = { version = "1", features = ["derive"] }
 ignore = "0.4"
 similar = "2"

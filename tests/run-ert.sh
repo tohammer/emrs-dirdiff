@@ -14,9 +14,9 @@ if [ ! -f "$emrs_el/emrs.el" ]; then
 fi
 out="$root/target/elisp"
 mkdir -p "$out"
-# emrs-dirdiff prefers a module built next to its own emrs-dirdiff.el
-# (lisp/, by emrs-dirdiff-build-module).  Test copies of the Lisp files, so
-# the debug module below is the one under test.
+# Test copies of the Lisp files; the debug module copied below to the same
+# directory is found on `load-path' by the installer, so it is the one
+# under test.
 rm -f "$out"/*.el "$out"/*.elc
 cp lisp/*.el "$out/"
 # Test the byte-compiled code, as installed packages run it; the timing of
@@ -31,5 +31,6 @@ for ext in so dylib dll; do
 done
 exec "${EMACS:-emacs}" --batch --module-assertions \
     -L "$out" -L "$emrs_el" \
+    --eval "(setq emrs-install-directory (file-name-as-directory (make-temp-file \"emrs-install\" t)) emrs-install-download 'never)" \
     -l "$root/tests/emrs-dirdiff-tests.el" \
     --eval "(ert-run-tests-batch-and-exit (or (getenv \"ERT_SELECTOR\") t))"

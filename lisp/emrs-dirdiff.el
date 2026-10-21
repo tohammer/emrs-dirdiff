@@ -3,7 +3,7 @@
 ;; Copyright (C) 2026  The emrs-dirdiff authors
 
 ;; Version: 0.2.0-snapshot
-;; Package-Requires: ((emacs "30.1") (emrs "0.1.0"))
+;; Package-Requires: ((emacs "30.1") (emrs "0.2.0"))
 ;; Keywords: files, tools
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -22,8 +22,9 @@
 ;; with the one in the other window.  The buffer opens at once and fills
 ;; while the module streams the differences.
 ;;
-;; The module is the file emrs-dirdiff-build.el installs next to this
-;; one, or `emrs-dirdiff-module' plus `module-file-suffix' on `load-path'.
+;; The module comes from emrs-install.el: a download of the release file
+;; for a released version, else a cargo build from the checkout, or
+;; `emrs-dirdiff-module' plus `module-file-suffix' on `load-path'.
 
 ;;; Code:
 
@@ -34,7 +35,7 @@
 (require 'seq)
 (require 'subr-x)
 (require 'emrs)
-(require 'emrs-dirdiff-build)
+(require 'emrs-install)
 
 (declare-function dired-get-marked-files "dired")
 (declare-function dired-marker-regexp "dired")
@@ -98,97 +99,20 @@ Each comparison buffer starts with this value."
 
 ;;;; Module
 
-(defun emrs-dirdiff--module-file ()
-  "Return the module file next to the true emrs-dirdiff.el, or nil.
-Nil when the repository cannot be found or the file does not exist."
-  (let* ((repo (ignore-errors (emrs-dirdiff-build--find-repo)))
-         (file (and repo (emrs-dirdiff-build--module-file repo))))
-    (and file (file-exists-p file) file)))
+(defconst emrs-dirdiff-module-version "0.2.0-snapshot"
+  "The version of the emrs-dirdiff module this Lisp code needs.
+It equals `version' in Cargo.toml and the Version header of this file.")
 
-(defun emrs-dirdiff--source-repo ()
-  "Return the repository root holding Cargo.toml, or nil."
-  (let ((repo (ignore-errors (emrs-dirdiff-build--find-repo))))
-    (and repo (file-exists-p (expand-file-name "Cargo.toml" repo)) repo)))
-
-(defun emrs-dirdiff--mtime (file)
-  "Return the modification time of FILE as a float, or nil if it is missing."
-  (when-let* ((attrs (file-attributes file)))
-    (float-time (file-attribute-modification-time attrs))))
-
-(defun emrs-dirdiff--newest-source (repo)
-  "Return the newest modification time of the module sources in REPO, or nil.
-The sources are src/**/*.rs, Cargo.toml and Cargo.lock."
-  (let ((src (expand-file-name "src" repo))
-        (newest nil))
-    (dolist (file (append (and (file-directory-p src)
-                               (directory-files-recursively src "\\.rs\\'"))
-                          (list (expand-file-name "Cargo.toml" repo)
-                                (expand-file-name "Cargo.lock" repo))))
-      (when-let* ((mtime (emrs-dirdiff--mtime file)))
-        (setq newest (if newest (max newest mtime) mtime))))
-    newest))
-
-(defun emrs-dirdiff--module-stale-p (repo)
-  "Non-nil when the module installed in REPO is older than its sources."
-  (let ((module (emrs-dirdiff--mtime (emrs-dirdiff-build--module-file repo)))
-        (newest (emrs-dirdiff--newest-source repo)))
-    (and module newest (< module newest))))
-
-(defun emrs-dirdiff--building-p ()
-  "Signal a `user-error' when the module is being built."
-  (when (get-buffer-process emrs-dirdiff-build--buffer)
-    (user-error "The emrs-dirdiff module is being built; run the command again when it is done")))
-
-(defun emrs-dirdiff--build-now ()
-  "Start building the module and signal a `user-error' saying so."
-  (emrs-dirdiff-build-module)
-  (user-error "Building the emrs-dirdiff module; run the command again when it is done"))
-
-(defun emrs-dirdiff--offer-rebuild ()
-  "Offer to rebuild a module older than its sources, before it is loaded.
-Declining loads the old module."
-  (when-let* ((repo (and (not noninteractive)
-                         (not (emrs-dirdiff-build--loaded-p))
-                         (emrs-dirdiff--source-repo))))
-    (when (emrs-dirdiff--module-stale-p repo)
-      (emrs-dirdiff--building-p)
-      (when (y-or-n-p "The emrs-dirdiff module is older than its sources.  Rebuild it now with cargo? ")
-        (emrs-dirdiff--build-now)))))
-
-(defun emrs-dirdiff--not-installed-error ()
-  "Signal the `user-error' for a module that cannot be found."
-  (if (emrs-dirdiff--source-repo)
-      (user-error "Cannot load the emrs-dirdiff module: install it as emrs-dirdiff-module%s on `load-path', or run M-x emrs-dirdiff-build-module"
-                  module-file-suffix)
-    (user-error "Cannot load the emrs-dirdiff module: install it as emrs-dirdiff-module%s on `load-path'; it is built from the emrs-dirdiff repository (see its README)"
-                module-file-suffix)))
-
-(defun emrs-dirdiff--offer-build ()
-  "Offer to build the missing module; signal a `user-error' either way."
-  (emrs-dirdiff--building-p)
-  (if (and (emrs-dirdiff--source-repo)
-           (not noninteractive)
-           (y-or-n-p "emrs-dirdiff module not built.  Build it now with cargo? "))
-      (emrs-dirdiff--build-now)
-    (emrs-dirdiff--not-installed-error)))
+(emrs-install-register 'emrs-dirdiff
+  :version emrs-dirdiff-module-version
+  :url "https://github.com/tohammer/emrs-dirdiff/releases/download"
+  :source (or load-file-name buffer-file-name))
 
 (defun emrs-dirdiff--load-module ()
-  "Load the emrs-dirdiff module, or signal a `user-error' that says what to do.
-Before the first load, offer to rebuild a module older than its sources."
-  (emrs-dirdiff--offer-rebuild)
-  (condition-case err
-      (emrs-load-module 'emrs-dirdiff (emrs-dirdiff--module-file))
-    (file-missing
-     (emrs-dirdiff--offer-build))
-    (error
-     (let ((file (emrs-dirdiff--module-file)))
-       (if file
-           (user-error "Loading %s failed: %s; rebuild it with M-x emrs-dirdiff-build-module"
-                       file (error-message-string err))
-         (user-error "Cannot load the emrs-dirdiff module (install it as emrs-dirdiff-module%s on `load-path'%s): %s"
-                     module-file-suffix
-                     (if (emrs-dirdiff--source-repo) ", or run M-x emrs-dirdiff-build-module" "")
-                     (error-message-string err)))))))
+  "Load the emrs-dirdiff module and return its handle.
+`emrs-install-load' finds, downloads or builds it, and signals a
+`user-error' that says what to do when it cannot."
+  (emrs-install-load 'emrs-dirdiff))
 
 ;;;; Instances
 
