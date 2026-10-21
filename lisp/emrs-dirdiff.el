@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2026  The emrs-dirdiff authors
 
-;; Version: 0.2.0-snapshot
+;; Version: 0.2.0
 ;; Package-Requires: ((emacs "30.1") (emrs "0.2.0"))
 ;; Keywords: files, tools
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -99,7 +99,7 @@ Each comparison buffer starts with this value."
 
 ;;;; Module
 
-(defconst emrs-dirdiff-module-version "0.2.0-snapshot"
+(defconst emrs-dirdiff-module-version "0.2.0"
   "The version of the emrs-dirdiff module this Lisp code needs.
 It equals `version' in Cargo.toml and the Version header of this file.")
 
