@@ -16,9 +16,11 @@ the architecture docs or an ADR.
 - The first release with the installer (v0.2.0) is the first check of
   emrs-dirdiff's download path: install it in a fresh `emacs -Q` without
   cargo.
-- The emrs pin in `Cargo.toml` is a commit hash: bump it deliberately and
-  run the full suite (the bump policy the comment in `Cargo.toml` points
-  to).
+- The emrs pin in `Cargo.toml` is a commit hash (now that of emrs v0.2.0):
+  bump it deliberately and run the full suite (the bump policy the comment
+  in `Cargo.toml` points to). Bump the `@v0.2.0` of emrs's release workflow
+  in `.github/workflows/release.yml` and `(emrs "0.2.0")` in
+  `Package-Requires` together with it.
 - emrs encodes Rust enums as one-element lists and gives modules no way to
   end a stream `cancelled`, so kinds and statuses are strings and streams
   stopped by the module end `failed` with "cancelled" (spec, "The

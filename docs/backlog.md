@@ -50,13 +50,6 @@ this way on 2026-10-18 from commit 0e523f4, which PR #2 merged into
   instead of building one.
 - Windows is left out of `platforms` because it is untested (README,
   Status).
-- `Package-Requires` names `(emrs "0.1.0")`, which an emrs without
-  `emrs-install.el` also satisfies; `(require 'emrs-install)` then fails
-  with "Cannot open load file". emrs has not bumped its version since the
-  installer was added, so there is nothing higher to require. Origin:
-  review of the branch `feat/emrs-install` (spec
-  `2026-10-20-emrs-install`), 2026-10-20. Revisit when emrs bumps its
-  Elisp version.
 - For the full ERT suite in the release, take over quarry's change to
   `tests/run-ert.sh` (`EMRS_MODULE_FILE`, `EMRS_EL_DIR`; quarry spec
   `2026-10-19-prebuilt-modules`) once it has run in a quarry release.

@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 # Pinned to a commit; bump deliberately (docs/next-steps.md).
-emrs = { git = "https://github.com/tohammer/emrs.git", rev = "13ba6c9793c9d7c6b50fefe50d3cea99cf237326" }
+emrs = { git = "https://github.com/tohammer/emrs.git", rev = "8a3fa355b3cf4d4bea7e73042f8255f0fc9e5307" }
 serde = { version = "1", features = ["derive"] }
 ignore = "0.4"
 similar = "2"
