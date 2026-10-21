@@ -39,10 +39,10 @@ Treat zip and tar archives as directory trees.
 Partly done. `.github/workflows/release.yml` calls emrs's reusable release
 workflow (emrs spec `2026-10-17-release-pipeline`, emrs ADRs 0004–0007): a
 tag `v<version>` builds, tests and publishes the module for linux-x86_64,
-linux-aarch64 and macos-aarch64 with `SHA256SUMS`. Release v0.1.0 was made
-this way on 2026-10-18 from commit 0e523f4, which PR #2 merged into
-`master`. The package gets the module through emrs's `emrs-install.el`
-(ADR 0004). Open:
+linux-aarch64 and macos-aarch64 with `SHA256SUMS`, and the package gets
+the module through emrs's `emrs-install.el` (ADR 0004). v0.2.0
+(2026-10-21) is the first release the installer downloads; that was checked
+in `emacs -nw` without cargo. Open:
 
 - The release tests only load the module (smoke test). Run the ERT suite
   against the downloaded file: a `test-command` that uses `EMRS_MODULE_DIR`

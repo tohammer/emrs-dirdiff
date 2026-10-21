@@ -13,9 +13,6 @@ the architecture docs or an ADR.
 - Version: one string in `Cargo.toml`, `emrs-dirdiff-module-version` and the
   `;; Version:` header; `X.Y.Z-snapshot` between releases (emrs ADR 0008,
   release steps in the README, section Development).
-- The first release with the installer (v0.2.0) is the first check of
-  emrs-dirdiff's download path: install it in a fresh `emacs -Q` without
-  cargo.
 - The emrs pin in `Cargo.toml` is a commit hash (now that of emrs v0.2.0):
   bump it deliberately and run the full suite (the bump policy the comment
   in `Cargo.toml` points to). Bump the `@v0.2.0` of emrs's release workflow
