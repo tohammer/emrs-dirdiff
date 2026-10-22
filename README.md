@@ -18,7 +18,8 @@ Checked automatically:
 
 - `cargo test` (the Rust module) passes.
 - The ERT suite (`tests/run-ert.sh`) passes in batch mode in CI on Linux
-  and macOS with Emacs 30.1 and 31.1.
+  and macOS with Emacs 30.1 and 31.1, and the release workflow runs it
+  against each released module file.
 
 Checked on Linux with Emacs 31.1 (2026-10-14). In a GUI frame driven by a
 script that exported screenshots of the frame:
@@ -350,7 +351,10 @@ commands are in [`docs/benchmark.md`](docs/benchmark.md).
 `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D warnings`
 and `cargo test` check the Rust side; `tests/run-ert.sh` builds the module
 and runs the ERT suite in batch mode with the module assertions on, with a
-temporary `emrs-install-directory` and downloads off.
+temporary `emrs-install-directory` and downloads off. With
+`EMRS_MODULE_FILE` set it tests that module file instead of building one,
+and `EMRS_EL_DIR` names the directory of `emrs.el` (the release workflow
+sets both).
 
 To release version X.Y.Z: set it in `Cargo.toml` (`version`; run `cargo
 build` so `Cargo.lock` follows), in `emrs-dirdiff-module-version` and in
