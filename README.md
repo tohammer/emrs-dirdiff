@@ -76,8 +76,8 @@ command that needs it, the installer uses, in this order:
 emrs-install-build` builds it, and `M-x emrs-install-clean` deletes
 versions no longer used. Whether to download without asking
 (`emrs-install-download`), the install directory and the cargo program
-are user options of emrs; see its README, section
-["Installing modules for users"](https://github.com/tohammer/emrs#installing-modules-for-users).
+are user options of emrs; see its
+[installer reference](https://github.com/tohammer/emrs/blob/master/docs/user/distributing.md#installer-reference).
 Emacs cannot unload a module: restart it to use a new build.
 
 ### Doom Emacs (straight)
