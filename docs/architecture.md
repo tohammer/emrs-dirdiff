@@ -26,7 +26,7 @@ one at a time (ADR 0003). Timing against `diff -rq`:
 | `src/compare.rs` | Whether two files are the same; line counts | `similar` |
 | `lisp/emrs-dirdiff.el` | Module loading, commands, the result model, the buffer with its views, marks, actions, the rescan queue | `emrs.el`, `emrs-install.el` |
 | `lisp/emrs-dirdiff-menu.el` | `emrs-dirdiff-menu`, a transient prefix bound to `?`; autoloaded, so transient loads on first use | `transient`, `emrs-dirdiff.el` |
-| `tests/run-ert.sh` | Builds the debug module, copies it and the Lisp files to `target/elisp` and byte-compiles them there, finds emrs's `elisp/` directory (`emrs.el`, `emrs-install.el`) through `cargo metadata`, runs ERT with `--module-assertions`, a temporary `emrs-install-directory` and downloads off | `tests/emrs-dirdiff-tests.el` |
+| `tests/run-ert.sh` | Builds the debug module (or takes the file in `EMRS_MODULE_FILE`, as the release workflow does), copies it and the Lisp files to `target/elisp` and byte-compiles them there, finds emrs's `elisp/` directory (`emrs.el`, `emrs-install.el`) through `cargo metadata` (or `EMRS_EL_DIR`), runs ERT with `--module-assertions`, a temporary `emrs-install-directory` and downloads off | `tests/emrs-dirdiff-tests.el` |
 | `.github/workflows/ci.yml` | Rust checks, MSRV, and the ERT suite on Emacs 30.1 and 31.1 on Linux and macOS (responsiveness limit 150 ms there) | |
 
 ## How it fits together
