@@ -16,6 +16,8 @@ jobs:
   release:
     uses: tohammer/emrs/.github/workflows/module-release.yml@v0.2.0
     with:
+      # The same emrs release as the crate's emrs pin in Cargo.toml.
+      cargo-emacs: v0.2.0
       # Windows is untested (README, Status).
       platforms: '["linux-x86_64", "linux-aarch64", "macos-aarch64"]'
       publish: ${{ startsWith(github.ref, 'refs/tags/v') }}

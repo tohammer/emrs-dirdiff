@@ -16,7 +16,7 @@ the architecture docs or an ADR.
 - The emrs pin in `Cargo.toml` is a commit hash (now that of emrs v0.2.0):
   bump it deliberately and run the full suite (the bump policy the comment
   in `Cargo.toml` points to). Bump the `@v0.2.0` of emrs's release workflow
-  in `.github/workflows/release.yml` and `(emrs "0.2.0")` in
+  and its `cargo-emacs: v0.2.0` in `.github/workflows/release.yml` and `(emrs "0.2.0")` in
   `Package-Requires` together with it.
 - emrs encodes Rust enums as one-element lists and gives modules no way to
   end a stream `cancelled`, so kinds and statuses are strings and streams
